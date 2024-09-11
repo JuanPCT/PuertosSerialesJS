@@ -17,6 +17,30 @@
     {
         const port = await navigator.serial.requestPort();
     });
+    const ports = await navigator.serial.getPorts();
+    await port.open({ baudRate: 9600 });
+    const reader = port.readable.getReader();
+
+    while (port.readable) {
+      const reader = port.readable.getReader();
+    
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            // Allow the serial port to be closed later.
+            reader.releaseLock();
+            break;
+          }
+          if (value) {
+            console.log(value);
+          }
+        }
+      } catch (error) {
+          console.log(error);
+        // TODO: Handle non-fatal read error.
+      }
+    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </html>
